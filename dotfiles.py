@@ -1,18 +1,25 @@
 import json
 import sys
+import logging
 
 from argparse import ArgumentParser
 from pathlib import Path
-from logging import getLogger, basicConfig, INFO
 
-LOGGER = getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
 
 
 def main(
         is_restore: bool = False,
         is_dry_run: bool = False,
 ):
-    ...
+    if is_dry_run:
+        handle = logging.StreamHandler(sys.stdout)
+        handle.setLevel(logging.INFO)
+        handle.setFormatter(logging.Formatter("DRY-RUN: %(message)s"))
+        LOGGER.addHandler(handle)
+
+
 
 
 if __name__ == '__main__':

@@ -4,10 +4,15 @@ import logging
 
 from argparse import ArgumentParser
 from pathlib import Path
+from dataclasses import dataclass
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
+@dataclass
+class PathConfig:
+    src: Path
+    dst: Path
 
 def main(
         is_restore: bool = False,

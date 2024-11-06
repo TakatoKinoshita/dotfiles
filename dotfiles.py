@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
+LOGGER.addHandler(logging.FileHandler(Path(__file__).parent / 'dotfiles.log'))
 
 def recording(log: logging.Logger):
     def _decorator(func):

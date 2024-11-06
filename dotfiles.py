@@ -3,11 +3,41 @@ import sys
 import logging
 
 from argparse import ArgumentParser
+from functools import wraps
+from inspect import signature
 from pathlib import Path
 from dataclasses import dataclass
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
+
+def recording(log: logging.Logger):
+    def _decorator(func):
+        @wraps(func)
+        def _wrapper(*args, **kwargs):
+            name = func.__name__
+            bn = signature(func).bind(*args, **kwargs)
+            bn.apply_defaults()
+
+            log.debug("----------start---------- [%s]", name)
+            log.debug("args: %s", bn.arguments)
+
+            try:
+                result = func(*args, **kwargs)
+            except:
+                log.error("%s failed", name)
+                log.error("args: %s", bn.arguments)
+                raise
+
+            log.debug("returns: %s", result)
+            log.debug("-----------end----------- [%s]", name)
+
+            return result
+
+        return _wrapper
+
+    return _decorator
+
 
 @dataclass(frozen=True)
 class PathConfig:
@@ -17,6 +47,7 @@ class PathConfig:
 json_scalar = bool | int | float | str
 json_type = json_scalar | list["json_obj"] | dict[str, "json_obj"]
 
+@recording(LOGGER)
 def check_convert_json(
         src_base: Path,
         home_dir: Path,
@@ -53,7 +84,7 @@ def check_convert_json(
 
     return path_list
 
-
+@recording(LOGGER)
 def main(
         package_base: Path,
         home_dir: Path,

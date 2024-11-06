@@ -80,7 +80,9 @@ def check_convert_json(
             LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
             raise
 
-        path_list.append(PathConfig(src, dst))
+        path_conf = PathConfig(src, dst)
+        LOGGER.debug("Converted: %s -> %s", conf, path_conf)
+        path_list.append(path_conf)
 
     return path_list
 
@@ -97,6 +99,7 @@ def main(
         handle.setFormatter(logging.Formatter("DRY-RUN: %(message)s"))
         LOGGER.addHandler(handle)
 
+    LOGGER.info("Reading each path.json...")
     path_config_list: list[PathConfig] = []
     for pack in package_base.iterdir():
         if not pack.is_dir():
@@ -113,6 +116,8 @@ def main(
             home_dir=home_dir,
             json_obj=path_obj,
         ))
+    LOGGER.debug("path configs: %s", path_config_list)
+    LOGGER.info("...done.")
 
 
 if __name__ == '__main__':

@@ -15,6 +15,8 @@ class PathConfig:
     dst: Path
 
 def main(
+        package_base: Path,
+        home_dir: Path,
         is_restore: bool = False,
         is_dry_run: bool = False,
 ):
@@ -24,7 +26,8 @@ def main(
         handle.setFormatter(logging.Formatter("DRY-RUN: %(message)s"))
         LOGGER.addHandler(handle)
 
-    for pack in Path.cwd().iterdir():
+    path_config_list: list[PathConfig] = []
+    for pack in package_base.iterdir():
         if not pack.is_dir():
             continue
 
@@ -46,4 +49,10 @@ if __name__ == '__main__':
         help="Test run without actual file operations."
     )
     args = parser.parse_args()
-    main(args.restore, args.dry_run)
+
+    main(
+        package_base=Path.cwd(),
+        home_dir=Path.home(),
+        is_restore=args.restore,
+        is_dry_run=args.dry_run,
+    )

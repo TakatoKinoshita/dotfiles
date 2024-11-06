@@ -19,7 +19,15 @@ def main(
         handle.setFormatter(logging.Formatter("DRY-RUN: %(message)s"))
         LOGGER.addHandler(handle)
 
+    for pack in Path.cwd().iterdir():
+        if not pack.is_dir():
+            continue
 
+        setting_path = pack / "path.json"
+        with open(setting_path) as f:
+            LOGGER.debug("Opened %s.", setting_path)
+            path_dict = json.load(f)
+        LOGGER.debug("Loaded %s.", setting_path)
 
 
 if __name__ == '__main__':

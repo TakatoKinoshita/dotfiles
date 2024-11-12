@@ -199,7 +199,7 @@ def main(
     LOGGER.info("...done.")
 
     LOGGER.info("Back upping old dotfiles...")
-    backup_dir = home_dir / "dotbackup"
+    backup_dir = home_dir / ".dotbackup"
     if not backup_dir.exists():
         if not dry_run:
             backup_dir.mkdir()

@@ -128,6 +128,7 @@ def backup_dst(path_conf: PathConfig, backup_dir: Path, dry_run: bool):
     raise RuntimeError("%s is invalid." % path_conf)
 
 
+@recording(LOGGER)
 def cleanup_dst(path_conf: PathConfig, dry_run: bool):
     dst_path = path_conf.dst
     if not dst_path.exists():
@@ -150,6 +151,7 @@ def cleanup_dst(path_conf: PathConfig, dry_run: bool):
     raise RuntimeError("%s is invalid." % path_conf)
 
 
+@recording(LOGGER)
 def link_dst_to_src(path_conf: PathConfig, dry_run: bool):
     src_path = path_conf.src
     dst_path = path_conf.dst

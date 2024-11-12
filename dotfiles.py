@@ -146,6 +146,26 @@ def cleanup_dst(path_conf: PathConfig, dry_run: bool):
     LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
     raise RuntimeError("%s is invalid." % path_conf)
 
+
+def link_dst_to_src(path_conf: PathConfig, dry_run: bool):
+    src_path = path_conf.src
+    dst_path = path_conf.dst
+
+    if not src_path.exists():
+        LOGGER.warning("%s is not found. Broken link will be created.", src_path)
+
+    if src_path.is_dir():
+        if not dry_run:
+            dst_path.symlink_to(src_path, target_is_directory=True)
+        LOGGER.info("Linked: %s <- %s", src_path, dst_path)
+        return
+
+    if not dry_run:
+        dst_path.symlink_to(src_path)
+    LOGGER.info("Linked: %s <- %s", src_path, dst_path)
+    return
+
+
 @recording(LOGGER)
 def main(
         package_base: Path,
@@ -189,6 +209,12 @@ def main(
     for path_conf in path_config_list:
         cleanup_dst(path_conf=path_conf, dry_run=dry_run)
     LOGGER.info("...done.")
+
+    LOGGER.info("Linking to new dotfiles...")
+    for path_conf in path_config_list:
+        link_dst_to_src(path_conf=path_conf, dry_run=dry_run)
+    LOGGER.info("...done.")
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()

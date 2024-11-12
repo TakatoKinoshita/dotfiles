@@ -121,6 +121,28 @@ def backup_dst(path_conf: PathConfig, backup_dir: Path, dry_run: bool):
     LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
     raise RuntimeError("%s is invalid." % path_conf)
 
+
+def cleanup_dst(path_conf: PathConfig, dry_run: bool):
+    dst_path = path_conf.dst
+    if not dst_path.exists():
+        LOGGER.debug("%s is not found.", dst_path)
+        return
+
+    if dst_path.is_file():
+        if not dry_run:
+            dst_path.unlink()
+        LOGGER.info("Deleted: %s", dst_path)
+        return
+
+    if dst_path.is_dir():
+        if not dry_run:
+            shutil.rmtree(path_conf.dst)
+        LOGGER.info("Deleted: %s", dst_path)
+        return
+
+    LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
+    raise RuntimeError("%s is invalid." % path_conf)
+
 @recording(LOGGER)
 def main(
         package_base: Path,
@@ -158,6 +180,11 @@ def main(
         LOGGER.info("Created: %s", backup_dir)
     for path_conf in path_config_list:
         backup_dst(path_conf=path_conf, backup_dir=backup_dir, dry_run=dry_run)
+    LOGGER.info("...done.")
+
+    LOGGER.info("Cleaning upping old dotfiles...")
+    for path_conf in path_config_list:
+        cleanup_dst(path_conf=path_conf, dry_run=dry_run)
     LOGGER.info("...done.")
 
 if __name__ == '__main__':

@@ -1,12 +1,15 @@
 import json
 import sys
 import logging
+import shutil
 
 from argparse import ArgumentParser
 from functools import wraps
 from inspect import signature
 from pathlib import Path
 from dataclasses import dataclass
+
+from duplicity.config import dry_run
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -41,6 +44,7 @@ def recording(log: logging.Logger):
 
 @dataclass(frozen=True)
 class PathConfig:
+    package_name: str
     src: Path
     dst: Path
 
@@ -49,9 +53,9 @@ json_type = json_scalar | list["json_obj"] | dict[str, "json_obj"]
 
 @recording(LOGGER)
 def check_convert_json(
-        src_base: Path,
-        home_dir: Path,
         json_obj: json_type,
+        pack_path: Path,
+        home_dir: Path,
 ) -> list[PathConfig]:
     if isinstance(json_obj, json_scalar):
         LOGGER.error("path.json must be JSON object or array of objects. But got %s.", json_obj)
@@ -68,7 +72,7 @@ def check_convert_json(
             raise RuntimeError("%s is invalid." % is_home)
 
         try:
-            src = src_base / Path(conf["src"])
+            src = pack_path / Path(conf["src"])
             dst = home_dir / Path(conf["dst"]) if is_home else Path(conf["dst"])
         except KeyError:
             LOGGER.error('key "src" or "dst" not found in "%s".', conf)
@@ -80,11 +84,42 @@ def check_convert_json(
             LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
             raise
 
-        path_conf = PathConfig(src, dst)
+        path_conf = PathConfig(pack_path.name, src, dst)
         LOGGER.debug("Converted: %s -> %s", conf, path_conf)
         path_list.append(path_conf)
 
     return path_list
+
+@recording(LOGGER)
+def backup_dst(path_conf: PathConfig, backup_dir: Path, dry_run: bool):
+    dst_path = path_conf.dst
+    if not dst_path.exists():
+        LOGGER.debug("%s is not found.", dst_path)
+        return
+
+    backup_pack = backup_dir / path_conf.package_name
+    if not backup_pack.exists():
+        LOGGER.debug("%s is not found.", backup_pack)
+        if not dry_run:
+            backup_pack.mkdir()
+        LOGGER.info("Create: %s", backup_pack)
+
+    if dst_path.is_file():
+        backup_path = backup_pack / dst_path.name
+        if not dry_run:
+            shutil.copy2(dst_path, backup_pack)
+        LOGGER.info("Copied: %s -> %s", dst_path, backup_path)
+        return
+
+    if dst_path.is_dir():
+        backup_path = backup_pack / dst_path.name
+        if not dry_run:
+            shutil.copytree(dst_path, backup_path, dirs_exist_ok=True)
+        LOGGER.info("Copied: %s -> %s", dst_path, backup_path)
+        return
+
+    LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
+    raise RuntimeError("%s is invalid." % path_conf)
 
 @recording(LOGGER)
 def main(
@@ -111,14 +146,19 @@ def main(
             path_obj = json.load(f)
             LOGGER.debug("Loaded %s.", path_obj)
 
-        path_config_list.extend(check_convert_json(
-            src_base=pack,
-            home_dir=home_dir,
-            json_obj=path_obj,
-        ))
+        path_config_list.extend(check_convert_json(json_obj=path_obj, pack_path=pack, home_dir=home_dir))
     LOGGER.debug("path configs: %s", path_config_list)
     LOGGER.info("...done.")
 
+    LOGGER.info("Back upping old dotfiles...")
+    backup_dir = home_dir / "dotbackup"
+    if not backup_dir.exists():
+        if not dry_run:
+            backup_dir.mkdir()
+        LOGGER.info("Created: %s", backup_dir)
+    for path_conf in path_config_list:
+        backup_dst(path_conf=path_conf, backup_dir=backup_dir, dry_run=dry_run)
+    LOGGER.info("...done.")
 
 if __name__ == '__main__':
     parser = ArgumentParser()

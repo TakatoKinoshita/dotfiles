@@ -104,10 +104,13 @@ def backup_dst(path_conf: PathConfig, backup_dir: Path, dry_run: bool):
             backup_pack.mkdir()
         LOGGER.info("Create: %s", backup_pack)
 
+    if dst_path.is_symlink():
+        return
+
     if dst_path.is_file():
         backup_path = backup_pack / dst_path.name
         if not dry_run:
-            shutil.copy2(dst_path, backup_pack)
+            shutil.copy2(dst_path, backup_path)
         LOGGER.info("Copied: %s -> %s", dst_path, backup_path)
         return
 

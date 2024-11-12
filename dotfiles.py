@@ -104,7 +104,7 @@ def backup_dst(path_conf: PathConfig, backup_dir: Path, dry_run: bool):
     if not backup_pack.exists():
         LOGGER.debug("%s is not found.", backup_pack)
         if not dry_run:
-            backup_pack.mkdir()
+            backup_pack.mkdir(parents=True, exist_ok=True)
         LOGGER.info("Create: %s", backup_pack)
 
     if dst_path.is_symlink():
@@ -189,7 +189,7 @@ def main(
             continue
 
         setting_path = pack / "path.json"
-        with open(setting_path) as f:
+        with setting_path.open() as f:
             LOGGER.debug("Opened %s.", setting_path)
             path_obj = json.load(f)
             LOGGER.debug("Loaded %s.", path_obj)
@@ -200,10 +200,6 @@ def main(
 
     LOGGER.info("Back upping old dotfiles...")
     backup_dir = home_dir / ".dotbackup"
-    if not backup_dir.exists():
-        if not dry_run:
-            backup_dir.mkdir()
-        LOGGER.info("Created: %s", backup_dir)
     for path_conf in path_config_list:
         backup_dst(path_conf=path_conf, backup_dir=backup_dir, dry_run=dry_run)
     LOGGER.info("...done.")

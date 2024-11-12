@@ -10,7 +10,6 @@ from dataclasses import dataclass
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
-LOGGER.addHandler(logging.FileHandler(Path(__file__).parent / 'dotfiles.log'))
 
 def recording(log: logging.Logger):
     def _decorator(func):
@@ -132,6 +131,11 @@ if __name__ == '__main__':
         help="Test run without actual file operations."
     )
     args = parser.parse_args()
+
+    handle = logging.FileHandler(Path(__file__).parent / 'dotfiles.log')
+    handle.setLevel(logging.DEBUG)
+    handle.setFormatter(logging.Formatter("%(asctime)s [%(levelname)-8s]: %(message)s"))
+    LOGGER.addHandler(handle)
 
     main(
         package_base=Path.cwd(),

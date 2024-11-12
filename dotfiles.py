@@ -1,18 +1,18 @@
 import json
-import sys
 import logging
 import shutil
-
+import sys
 from argparse import ArgumentParser
+from dataclasses import dataclass
 from functools import wraps
 from inspect import signature
 from pathlib import Path
-from dataclasses import dataclass
 
 from duplicity.config import dry_run
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
+
 
 def recording(log: logging.Logger):
     def _decorator(func):
@@ -48,8 +48,10 @@ class PathConfig:
     src: Path
     dst: Path
 
+
 json_scalar = bool | int | float | str
 json_type = json_scalar | list["json_obj"] | dict[str, "json_obj"]
+
 
 @recording(LOGGER)
 def check_convert_json(
@@ -89,6 +91,7 @@ def check_convert_json(
         path_list.append(path_conf)
 
     return path_list
+
 
 @recording(LOGGER)
 def backup_dst(path_conf: PathConfig, backup_dir: Path, dry_run: bool):

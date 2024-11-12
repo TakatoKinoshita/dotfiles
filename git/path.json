@@ -1,0 +1,5 @@
+{
+  "is_home": true,
+  "src": "git",
+  "dst": ".config/git"
+}

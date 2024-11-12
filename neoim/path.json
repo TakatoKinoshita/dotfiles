@@ -1,0 +1,5 @@
+{
+  "is_home": true,
+  "src": "nvim",
+  "dst": ".config/nvim"
+}

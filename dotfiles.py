@@ -221,7 +221,7 @@ def main(
     for pack in package_base.iterdir():
         if not pack.is_dir():
             continue
-        copy_json(backup_dir, pack, is_dry_run)
+        copy_json(backup_dir=backup_dir, pack_dir=pack, dry_run=is_dry_run)
     LOGGER.info("...done.")
 
     LOGGER.info("Cleaning upping old dotfiles...")

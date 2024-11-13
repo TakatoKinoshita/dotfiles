@@ -83,7 +83,7 @@ def check_convert_json(
             raise RuntimeError("%s is invalid." % is_home)
 
         try:
-            src = pack_path / Path(conf["src"])
+            src = Path(conf["src"])
             dst = home_dir / Path(conf["dst"]) if is_home else Path(conf["dst"])
         except KeyError:
             LOGGER.error('key "src" or "dst" not found in "%s".', conf)
@@ -95,7 +95,7 @@ def check_convert_json(
             LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
             raise
 
-        path_conf = PathConfig(src, pack_path.name / src, dst)
+        path_conf = PathConfig(pack_path / src, pack_path.name / src, dst)
         LOGGER.debug("Converted: %s -> %s", conf, path_conf)
         path_list.append(path_conf)
 

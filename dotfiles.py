@@ -198,6 +198,9 @@ def main(
         if not pack.is_dir():
             continue
 
+        if pack.name.startswith("."):
+            continue
+
         setting_path = pack / "path.json"
         with setting_path.open() as f:
             LOGGER.debug("Opened %s.", setting_path)

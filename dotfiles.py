@@ -221,6 +221,8 @@ def main(
     for pack in package_base.iterdir():
         if not pack.is_dir():
             continue
+        if pack.name.startswith("."):
+            continue
         copy_json(backup_dir=backup_dir, pack_dir=pack, dry_run=is_dry_run)
     LOGGER.info("...done.")
 

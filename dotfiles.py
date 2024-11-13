@@ -8,8 +8,6 @@ from functools import wraps
 from inspect import signature
 from pathlib import Path
 
-from duplicity.config import dry_run
-
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
@@ -203,17 +201,17 @@ def main(
     LOGGER.info("Back upping old dotfiles...")
     backup_dir = home_dir / ".dotbackup"
     for path_conf in path_config_list:
-        backup_dst(path_conf=path_conf, backup_dir=backup_dir, dry_run=dry_run)
+        backup_dst(path_conf=path_conf, backup_dir=backup_dir, dry_run=is_dry_run)
     LOGGER.info("...done.")
 
     LOGGER.info("Cleaning upping old dotfiles...")
     for path_conf in path_config_list:
-        cleanup_dst(path_conf=path_conf, dry_run=dry_run)
+        cleanup_dst(path_conf=path_conf, dry_run=is_dry_run)
     LOGGER.info("...done.")
 
     LOGGER.info("Linking to new dotfiles...")
     for path_conf in path_config_list:
-        link_dst_to_src(path_conf=path_conf, dry_run=dry_run)
+        link_dst_to_src(path_conf=path_conf, dry_run=is_dry_run)
     LOGGER.info("...done.")
 
 

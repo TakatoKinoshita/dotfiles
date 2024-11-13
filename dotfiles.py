@@ -42,8 +42,8 @@ def recording(log: logging.Logger):
 
 @dataclass(frozen=True)
 class PathConfig:
-    package_name: str
     src: Path
+    src_relative: Path
     dst: Path
 
 
@@ -84,7 +84,7 @@ def check_convert_json(
             LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
             raise
 
-        path_conf = PathConfig(pack_path.name, src, dst)
+        path_conf = PathConfig(src, pack_path.name / src, dst)
         LOGGER.debug("Converted: %s -> %s", conf, path_conf)
         path_list.append(path_conf)
 
@@ -98,25 +98,24 @@ def backup_dst(path_conf: PathConfig, backup_dir: Path, dry_run: bool):
         LOGGER.debug("%s is not found.", dst_path)
         return
 
-    backup_pack = backup_dir / path_conf.package_name
-    if not backup_pack.exists():
-        LOGGER.debug("%s is not found.", backup_pack)
+    backup_path = backup_dir / path_conf.src_relative
+    backup_path_dir = backup_path.parent
+    if not backup_path_dir.exists():
+        LOGGER.debug("%s is not found.", backup_path)
         if not dry_run:
-            backup_pack.mkdir(parents=True, exist_ok=True)
-        LOGGER.info("Create: %s", backup_pack)
+            backup_path_dir.mkdir(parents=True, exist_ok=True)
+        LOGGER.info("Create: %s", backup_path_dir)
 
     if dst_path.is_symlink():
         return
 
     if dst_path.is_file():
-        backup_path = backup_pack / dst_path.name
         if not dry_run:
             shutil.copy2(dst_path, backup_path)
         LOGGER.info("Copied: %s -> %s", dst_path, backup_path)
         return
 
     if dst_path.is_dir():
-        backup_path = backup_pack / dst_path.name
         if not dry_run:
             shutil.copytree(dst_path, backup_path, dirs_exist_ok=True)
         LOGGER.info("Copied: %s -> %s", dst_path, backup_path)

@@ -169,6 +169,15 @@ def link_dst_to_src(path_conf: PathConfig, dry_run: bool):
 
 
 @recording(LOGGER)
+def copy_json(backup_dir: Path, pack_dir: Path, dry_run: bool):
+    setting_path = pack_dir / "path.json"
+    copy_to = backup_dir / pack_dir.name / "path.json"
+    if not dry_run:
+        shutil.copy2(setting_path, copy_to)
+    LOGGER.info("Copied: %s -> %s", setting_path, copy_to)
+
+
+@recording(LOGGER)
 def main(
         package_base: Path,
         home_dir: Path,
@@ -201,6 +210,13 @@ def main(
     backup_dir = home_dir / ".dotbackup"
     for path_conf in path_config_list:
         backup_dst(path_conf=path_conf, backup_dir=backup_dir, dry_run=is_dry_run)
+    LOGGER.info("...done.")
+
+    LOGGER.info("Copying each path.json...")
+    for pack in package_base.iterdir():
+        if not pack.is_dir():
+            continue
+        copy_json(backup_dir, pack, is_dry_run)
     LOGGER.info("...done.")
 
     LOGGER.info("Cleaning upping old dotfiles...")

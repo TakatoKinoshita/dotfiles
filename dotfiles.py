@@ -141,7 +141,7 @@ def cleanup_dst(path_conf: PathConfig, dry_run: bool):
 
     if dst_path.is_dir():
         if not dry_run:
-            shutil.rmtree(path_conf.dst)
+            shutil.rmtree(dst_path)
         LOGGER.info("Deleted: %s", dst_path)
         return
 

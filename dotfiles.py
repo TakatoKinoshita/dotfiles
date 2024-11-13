@@ -53,6 +53,15 @@ json_scalar = bool | int | float | str
 json_type = json_scalar | list["json_obj"] | dict[str, "json_obj"]
 
 
+def iter_package(package_base: Path):
+    for p in package_base.iterdir():
+        if not p.is_dir():
+            continue
+        if p.name.startswith("."):
+            continue
+        yield p
+
+
 @recording(LOGGER)
 def check_convert_json(
         json_obj: json_type,
@@ -194,13 +203,7 @@ def main(
 
     LOGGER.info("Reading each path.json...")
     path_config_list: list[PathConfig] = []
-    for pack in package_base.iterdir():
-        if not pack.is_dir():
-            continue
-
-        if pack.name.startswith("."):
-            continue
-
+    for pack in iter_package(package_base):
         setting_path = pack / "path.json"
         with setting_path.open() as f:
             LOGGER.debug("Opened %s.", setting_path)

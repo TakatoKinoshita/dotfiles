@@ -1,0 +1,12 @@
+[
+  {
+    "is_home": true,
+    "src": "file3_1",
+    "dst": "file3_1"
+  },
+  {
+    "is_home": true,
+    "src": "dir3_1",
+    "dst": "dir3_1"
+  }
+]

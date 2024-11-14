@@ -14,7 +14,6 @@ class MyTestCase(unittest.TestCase):
     def test_normal(self):
         dotfile = Path("package_bases/normal")
         packs = [f"pack{i}" for i in [1, 3, 8, 9]]
-        pack_len = [1, 2, 1, 1]
         expected_confs = [
             [
                 PathConfig(
@@ -50,16 +49,12 @@ class MyTestCase(unittest.TestCase):
                 ),
             ],
         ]
-        for pack, pl, ec in zip(packs, pack_len, expected_confs):
+        for pack, ec in zip(packs, expected_confs):
             pack_dir = dotfile / pack
             json = load_json(pack_dir / "path.json")
 
             with self.subTest(package=pack):
                 conf_list = check_convert_json(json, pack_dir, self.home_dir)
-
-                self.assertIsInstance(conf_list, list)
-                [self.assertIsInstance(c, PathConfig) for c in conf_list]
-                self.assertEqual(pl, len(conf_list))
                 self.assertListEqual(ec, conf_list)
 
     def test_error(self):

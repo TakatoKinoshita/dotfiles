@@ -248,10 +248,7 @@ def main(
         copy_json(backup_dir=backup_dir, pack_dir=pack, dry_run=is_dry_run)
     LOGGER.info("...done.")
 
-    LOGGER.info("Back upping old dotfiles...")
-    for path_conf in path_config_list:
-        backup_dst(path_conf=path_conf, backup_dir=backup_dir, dry_run=is_dry_run)
-    LOGGER.info("...done.")
+        LOGGER.info("End process for %s", path.name)
 
 
 #    LOGGER.info("Reading each path.json...")

@@ -45,7 +45,6 @@ def recording(log: logging.Logger):
 @dataclass(frozen=True)
 class PathConfig:
     src: Path
-    src_relative: Path
     dst: Path
 
 

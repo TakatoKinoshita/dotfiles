@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from functools import wraps
 from inspect import signature
 from pathlib import Path
+from functools import lru_cache
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -61,6 +62,25 @@ def iter_package(package_base: Path):
         if p.name.startswith("_"):
             continue
         yield p
+
+
+@recording(LOGGER)
+@lru_cache
+def cache_load_json(path: Path) -> json_type:
+    with path.open() as f:
+        LOGGER.debug("Opened %s.", path)
+        json_obj = json.load(f)
+        LOGGER.debug("Loaded %s.", json_obj)
+    return json_obj
+
+
+@recording(LOGGER)
+def normalize_json(json_obj: json_type) -> list[json_type]:
+    if isinstance(json_obj, dict):
+        json_obj = [json_obj]
+    for entry in json_obj:
+        entry["is_home"] = entry.get("is_home", True)
+    return json_obj
 
 
 @recording(LOGGER)

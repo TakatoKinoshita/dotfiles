@@ -70,7 +70,7 @@ def check_convert_json(
 ) -> list[PathConfig]:
     if isinstance(json_obj, json_scalar):
         LOGGER.error("path.json must be JSON object or array of objects. But got %s.", json_obj)
-        raise RuntimeError("%s is invalid." % json_obj)
+        raise TypeError("%s is invalid." % json_obj)
 
     if isinstance(json_obj, dict):
         json_obj = [json_obj]
@@ -80,7 +80,7 @@ def check_convert_json(
         is_home = conf.get("is_home", True)
         if not isinstance(is_home, bool):
             LOGGER.error('value of key "is_home" must be boolean. But got %s.', is_home)
-            raise RuntimeError("%s is invalid." % is_home)
+            raise TypeError("%s is invalid." % is_home)
 
         try:
             src = Path(conf["src"])

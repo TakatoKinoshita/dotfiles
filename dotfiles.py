@@ -58,6 +58,8 @@ def iter_package(package_base: Path):
             continue
         if p.name.startswith("."):
             continue
+        if p.name.startswith("_"):
+            continue
         yield p
 
 

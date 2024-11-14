@@ -50,7 +50,7 @@ class PathConfig:
 
 
 json_scalar = bool | int | float | str
-json_type = json_scalar | list["json_obj"] | dict[str, "json_obj"]
+json_type = json_scalar | list["json_type"] | dict[str, "json_type"]
 
 
 def iter_package(package_base: Path):

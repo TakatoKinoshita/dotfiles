@@ -103,6 +103,15 @@ def check_convert_json(
 
 
 @recording(LOGGER)
+def copy_json(backup_dir: Path, pack_dir: Path, dry_run: bool):
+    setting_path = pack_dir / "path.json"
+    copy_to = backup_dir / pack_dir.name / "path.json"
+    if not dry_run:
+        shutil.copy2(setting_path, copy_to)
+    LOGGER.info("Copied: %s -> %s", setting_path, copy_to)
+
+
+@recording(LOGGER)
 def backup_dst(path_conf: PathConfig, backup_dir: Path, dry_run: bool):
     dst_path = path_conf.dst
     if not dst_path.exists():
@@ -177,15 +186,6 @@ def link_dst_to_src(path_conf: PathConfig, dry_run: bool):
         dst_path.symlink_to(src_path)
     LOGGER.info("Linked: %s <- %s", src_path, dst_path)
     return
-
-
-@recording(LOGGER)
-def copy_json(backup_dir: Path, pack_dir: Path, dry_run: bool):
-    setting_path = pack_dir / "path.json"
-    copy_to = backup_dir / pack_dir.name / "path.json"
-    if not dry_run:
-        shutil.copy2(setting_path, copy_to)
-    LOGGER.info("Copied: %s -> %s", setting_path, copy_to)
 
 
 @recording(LOGGER)

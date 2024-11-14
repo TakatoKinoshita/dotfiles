@@ -6,10 +6,9 @@ import shutil
 import sys
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from functools import wraps
+from functools import wraps, lru_cache
 from inspect import signature
 from pathlib import Path
-from functools import lru_cache
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -84,10 +83,7 @@ def normalize_json(json_obj: json_type) -> list[json_type]:
 
 
 @recording(LOGGER)
-def list_json_to_config(
-        json_obj: list[json_type],
-        home_dir: Path,
-) -> list[PathConfig]:
+def list_json_to_config(json_obj: list[json_type], home_dir: Path, ) -> list[PathConfig]:
     res = []
     for entry in json_obj:
         dst = home_dir / entry["dst"] if entry["is_home"] else entry["dst"]
@@ -120,8 +116,6 @@ def check_json(json_obj: json_type):
         except:
             LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
             raise
-
-
 
 
 @recording(LOGGER)
@@ -211,12 +205,7 @@ def link_dst_to_src(path_conf: PathConfig, dry_run: bool):
 
 
 @recording(LOGGER)
-def main(
-        package_base: Path,
-        home_dir: Path,
-        is_restore: bool = False,
-        is_dry_run: bool = False,
-):
+def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_run: bool = False, ):
     if is_dry_run:
         handle = logging.StreamHandler(sys.stdout)
         handle.setLevel(logging.INFO)
@@ -284,14 +273,8 @@ def main(
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument(
-        "--restore", action="store_true",
-        help="Restore dotfiles from backup."
-    )
-    parser.add_argument(
-        "--dry-run", action="store_true",
-        help="Test run without actual file operations."
-    )
+    parser.add_argument("--restore", action="store_true", help="Restore dotfiles from backup.")
+    parser.add_argument("--dry-run", action="store_true", help="Test run without actual file operations.")
     args = parser.parse_args()
 
     handle = logging.FileHandler(Path(__file__).parent / 'dotfiles.log')
@@ -299,9 +282,4 @@ if __name__ == '__main__':
     handle.setFormatter(logging.Formatter("%(asctime)s [%(levelname)-8s]: %(message)s"))
     LOGGER.addHandler(handle)
 
-    main(
-        package_base=Path.cwd(),
-        home_dir=Path.home(),
-        is_restore=args.restore,
-        is_dry_run=args.dry_run,
-    )
+    main(package_base=Path.cwd(), home_dir=Path.home(), is_restore=args.restore, is_dry_run=args.dry_run, )

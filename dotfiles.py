@@ -237,16 +237,8 @@ def main(
     LOGGER.debug("path configs: %s", path_config_list)
     LOGGER.info("...done.")
 
-    LOGGER.info("Set upping backup...")
-    backup_dir = home_dir / ".dotbackup"
-    for pack in iter_package(package_base):
-        backup_pack = backup_dir / pack.name
-        if not backup_pack.exists():
-            if not is_dry_run:
-                backup_pack.mkdir(parents=True, exist_ok=True)
-            LOGGER.info("Created: %s", backup_pack)
-        copy_json(backup_dir=backup_dir, pack_dir=pack, dry_run=is_dry_run)
-    LOGGER.info("...done.")
+        LOGGER.info("Set upping backup...")
+        LOGGER.info("...done")
 
         LOGGER.info("End process for %s", path.name)
 

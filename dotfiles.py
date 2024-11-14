@@ -84,6 +84,18 @@ def normalize_json(json_obj: json_type) -> list[json_type]:
 
 
 @recording(LOGGER)
+def list_json_to_config(
+        json_obj: list[json_type],
+        home_dir: Path,
+) -> list[PathConfig]:
+    res = []
+    for entry in json_obj:
+        dst = home_dir / entry["dst"] if entry["is_home"] else entry["dst"]
+        res.append(PathConfig(src=entry["src"], dst=dst))
+    return res
+
+
+@recording(LOGGER)
 def check_json(json_obj: json_type):
     if isinstance(json_obj, json_scalar):
         LOGGER.error("path.json must be JSON object or array of objects. But got %s.", json_obj)
@@ -110,18 +122,6 @@ def check_json(json_obj: json_type):
             raise
 
 
-#@recording(LOGGER)
-#def check_convert_json(
-#        json_obj: json_type,
-#        pack_path: Path,
-#        home_dir: Path,
-#) -> list[PathConfig]:
-#
-#        path_conf = PathConfig(pack_path / src, pack_path.name / src, dst)
-#        LOGGER.debug("Converted: %s -> %s", conf, path_conf)
-#        path_list.append(path_conf)
-#
-#    return path_list
 
 
 @recording(LOGGER)
@@ -233,9 +233,12 @@ def main(
     for path in iter_package(package_base):
         LOGGER.info("Start process for %s", path.name)
 
-        path_config_list.extend(check_convert_json(json_obj=path_obj, pack_path=pack, home_dir=home_dir))
-    LOGGER.debug("path configs: %s", path_config_list)
-    LOGGER.info("...done.")
+        LOGGER.info("Loading path.json...")
+        json_path = path / "path.json"
+        json_obj = cache_load_json(json_path)
+        json_obj = normalize_json(json_obj)
+        confs = list_json_to_config(json_obj, home_dir)
+        LOGGER.info("...done")
 
         LOGGER.info("Set upping backup...")
         LOGGER.info("...done")

@@ -84,33 +84,26 @@ def normalize_json(json_obj: json_type) -> list[json_type]:
 
 
 @recording(LOGGER)
-def check_convert_json(
-        json_obj: json_type,
-        pack_path: Path,
-        home_dir: Path,
-) -> list[PathConfig]:
+def check_json(json_obj: json_type):
     if isinstance(json_obj, json_scalar):
         LOGGER.error("path.json must be JSON object or array of objects. But got %s.", json_obj)
         raise TypeError("%s is invalid." % json_obj)
 
-    if isinstance(json_obj, dict):
-        json_obj = [json_obj]
-
-    path_list: list[PathConfig] = []
-    for conf in json_obj:
-        is_home = conf.get("is_home", True)
+    json_obj = normalize_json(json_obj)
+    for entry in json_obj:
+        is_home = entry["is_home"]
         if not isinstance(is_home, bool):
             LOGGER.error('value of key "is_home" must be boolean. But got %s.', is_home)
             raise TypeError("%s is invalid." % is_home)
 
         try:
-            src = Path(conf["src"])
-            dst = home_dir / Path(conf["dst"]) if is_home else Path(conf["dst"])
+            Path(entry["src"])
+            Path(entry["dst"])
         except KeyError:
-            LOGGER.error('key "src" or "dst" not found in "%s".', conf)
+            LOGGER.error('key "src" or "dst" not found in "%s".', entry)
             raise
         except TypeError:
-            LOGGER.error('key "src" and "dst" must be valid path. But got "%s".', conf)
+            LOGGER.error('key "src" and "dst" must be valid path. But got "%s".', entry)
             raise
         except:
             LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
@@ -230,14 +223,15 @@ def main(
         handle.setFormatter(logging.Formatter("DRY-RUN: %(message)s"))
         LOGGER.addHandler(handle)
 
-    LOGGER.info("Reading each path.json...")
-    path_config_list: list[PathConfig] = []
-    for pack in iter_package(package_base):
-        setting_path = pack / "path.json"
-        with setting_path.open() as f:
-            LOGGER.debug("Opened %s.", setting_path)
-            path_obj = json.load(f)
-            LOGGER.debug("Loaded %s.", path_obj)
+    LOGGER.info("Checking each path.json...")
+    for path in iter_package(package_base):
+        json_path = path / "path.json"
+        json_obj = cache_load_json(json_path)
+        check_json(json_obj)
+    LOGGER.info("...done")
+
+    for path in iter_package(package_base):
+        LOGGER.info("Start process for %s", path.name)
 
         path_config_list.extend(check_convert_json(json_obj=path_obj, pack_path=pack, home_dir=home_dir))
     LOGGER.debug("path configs: %s", path_config_list)

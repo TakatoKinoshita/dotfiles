@@ -128,37 +128,34 @@ def copy_json(backup_dir: Path, pack_dir: Path, dry_run: bool):
 
 
 @recording(LOGGER)
-def backup_dst(path_conf: PathConfig, backup_dir: Path, dry_run: bool):
-    dst_path = path_conf.dst
-    if not dst_path.exists():
-        LOGGER.debug("%s is not found.", dst_path)
+def backup_dst(dst: Path, backup_dir: Path, dry_run: bool):
+    if not dst.exists():
+        LOGGER.debug("%s is not found.", dst)
         return
 
-    backup_path = backup_dir / path_conf.src_relative
-    backup_path_dir = backup_path.parent
-    if not backup_path_dir.exists():
-        LOGGER.debug("%s is not found.", backup_path)
-        if not dry_run:
-            backup_path_dir.mkdir(parents=True, exist_ok=True)
-        LOGGER.info("Create: %s", backup_path_dir)
-
-    if dst_path.is_symlink():
+    if dst.is_symlink():
+        LOGGER.debug("%s is a symbolic link.", dst)
         return
 
-    if dst_path.is_file():
-        if not dry_run:
-            shutil.copy2(dst_path, backup_path)
-        LOGGER.info("Copied: %s -> %s", dst_path, backup_path)
-        return
+    if not dry_run:
+        backup_dir.mkdir(parents=True, exist_ok=True)
 
-    if dst_path.is_dir():
+    copy_to = backup_dir / dst.name
+    if dst.is_file():
+        LOGGER.debug("%s is a file.", dst)
         if not dry_run:
-            shutil.copytree(dst_path, backup_path, dirs_exist_ok=True)
-        LOGGER.info("Copied: %s -> %s", dst_path, backup_path)
+            shutil.copy2(dst, copy_to)
+        LOGGER.info("Copied: %s -> %s", dst, copy_to)
+        return
+    if dst.is_dir():
+        LOGGER.debug("%s is a directory.", dst)
+        if not dry_run:
+            shutil.copytree(dst, copy_to, dirs_exist_ok=True)
+        LOGGER.info("Copied: %s -> %s", dst, copy_to)
         return
 
     LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
-    raise RuntimeError("%s is invalid." % path_conf)
+    raise RuntimeError("%s is invalid." % dst)
 
 
 @recording(LOGGER)
@@ -229,7 +226,10 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
         confs = list_json_to_config(json_obj, home_dir)
         LOGGER.info("...done")
 
-        LOGGER.info("Set upping backup...")
+        LOGGER.info("Back upping old dotfiles...")
+        backup_dir = home_dir / ".dotbackup"
+        for conf in confs:
+            backup_dst(dst=conf.dst, backup_dir=backup_dir, dry_run=is_dry_run)
         LOGGER.info("...done")
 
         LOGGER.info("End process for %s", path.name)

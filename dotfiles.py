@@ -214,21 +214,7 @@ def link_dst_to_src(path_conf: PathConfig, dry_run: bool):
     return
 
 
-@recording(LOGGER)
-def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_run: bool = False, ):
-    if is_dry_run:
-        handle = logging.StreamHandler(sys.stdout)
-        handle.setLevel(logging.INFO)
-        handle.setFormatter(logging.Formatter("DRY-RUN: %(message)s"))
-        LOGGER.addHandler(handle)
-
-    LOGGER.info("Checking each path.json...")
-    for path in iter_package(package_base):
-        json_path = path / "path.json"
-        json_obj = cache_load_json(json_path)
-        check_json(json_obj)
-    LOGGER.info("...done")
-
+def main_install(package_base, home_dir, is_dry_run):
     if is_dry_run:
         LOGGER.warning("Notice that generation of path.json will skipped in dry run.")
         LOGGER.warning("In other words, the operation will be informed even if path.json will actually be created.")
@@ -264,6 +250,25 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
         LOGGER.info("...done.")
 
         LOGGER.info("End process for %s", path.name)
+
+
+@recording(LOGGER)
+def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_run: bool = False, ):
+    if is_dry_run:
+        handle = logging.StreamHandler(sys.stdout)
+        handle.setLevel(logging.INFO)
+        handle.setFormatter(logging.Formatter("DRY-RUN: %(message)s"))
+        LOGGER.addHandler(handle)
+
+    LOGGER.info("Checking each path.json...")
+    for path in iter_package(package_base):
+        json_path = path / "path.json"
+        json_obj = cache_load_json(json_path)
+        check_json(json_obj)
+    LOGGER.info("...done")
+
+    main_install(package_base, home_dir, is_dry_run)
+
 
 
 if __name__ == '__main__':

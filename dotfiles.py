@@ -118,6 +118,14 @@ def list_json_to_config(json_obj: list[json_type], home_dir: Path, ) -> list[Pat
     return res
 
 
+def load_check_convert_json(path, home_dir):
+    json_path = path / "path.json"
+    json_obj = cache_load_json(json_path)
+    json_obj = normalize_json(json_obj)
+    confs = list_json_to_config(json_obj, home_dir)
+    return confs
+
+
 @recording(LOGGER)
 def backup_dst(dst: Path, backup_dir: Path, dry_run: bool):
     if not dst.exists():
@@ -223,10 +231,7 @@ def main_install(package_base: Path, home_dir: Path, is_dry_run: bool) -> None:
         LOGGER.info("Start process for %s", path.name)
 
         LOGGER.info("Loading path.json...")
-        json_path = path / "path.json"
-        json_obj = cache_load_json(json_path)
-        json_obj = normalize_json(json_obj)
-        confs = list_json_to_config(json_obj, home_dir)
+        confs = load_check_convert_json(path, home_dir)
         LOGGER.info("...done")
 
         LOGGER.info("Back upping old dotfiles...")
@@ -256,7 +261,12 @@ def main_install(package_base: Path, home_dir: Path, is_dry_run: bool) -> None:
 @recording(LOGGER)
 def main_restore(package_base: Path, home_dir: Path, is_dry_run: bool) -> None:
     for path in iter_package(package_base):
-        pass
+        LOGGER.info("Start process for %s", path.name)
+
+        LOGGER.info("Loading path.json...")
+        confs = load_check_convert_json(path, home_dir)
+        LOGGER.info("...done")
+
 
 
 @recording(LOGGER)

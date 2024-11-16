@@ -74,24 +74,6 @@ def cache_load_json(path: Path) -> json_type:
 
 
 @recording(LOGGER)
-def normalize_json(json_obj: json_type) -> list[json_type]:
-    if isinstance(json_obj, dict):
-        json_obj = [json_obj]
-    for entry in json_obj:
-        entry["is_home"] = entry.get("is_home", True)
-    return json_obj
-
-
-@recording(LOGGER)
-def list_json_to_config(json_obj: list[json_type], home_dir: Path, ) -> list[PathConfig]:
-    res = []
-    for entry in json_obj:
-        dst = home_dir / entry["dst"] if entry["is_home"] else entry["dst"]
-        res.append(PathConfig(src=entry["src"], dst=dst))
-    return res
-
-
-@recording(LOGGER)
 def check_json(json_obj: json_type):
     if isinstance(json_obj, json_scalar):
         LOGGER.error("path.json must be JSON object or array of objects. But got %s.", json_obj)
@@ -116,6 +98,24 @@ def check_json(json_obj: json_type):
         except:
             LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
             raise
+
+
+@recording(LOGGER)
+def normalize_json(json_obj: json_type) -> list[json_type]:
+    if isinstance(json_obj, dict):
+        json_obj = [json_obj]
+    for entry in json_obj:
+        entry["is_home"] = entry.get("is_home", True)
+    return json_obj
+
+
+@recording(LOGGER)
+def list_json_to_config(json_obj: list[json_type], home_dir: Path, ) -> list[PathConfig]:
+    res = []
+    for entry in json_obj:
+        dst = home_dir / entry["dst"] if entry["is_home"] else entry["dst"]
+        res.append(PathConfig(src=entry["src"], dst=dst))
+    return res
 
 
 @recording(LOGGER)

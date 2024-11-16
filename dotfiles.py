@@ -229,6 +229,9 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
         check_json(json_obj)
     LOGGER.info("...done")
 
+    if is_dry_run:
+        LOGGER.warning("Notice that generation of path.json will skipped in dry run.")
+        LOGGER.warning("In other words, the operation will be informed even if path.json will actually be created.")
     for path in iter_package(package_base):
         LOGGER.info("Start process for %s", path.name)
 

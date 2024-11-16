@@ -196,21 +196,21 @@ def cleanup_dst(dst: Path, dry_run: bool):
 
 @recording(LOGGER)
 def link_dst_to_src(path_conf: PathConfig, dry_run: bool):
-    src_path = path_conf.src
-    dst_path = path_conf.dst
+    src = path_conf.src
+    dst = path_conf.dst
 
-    if not src_path.exists():
-        LOGGER.warning("%s is not found. Broken link will be created.", src_path)
+    if not src.exists():
+        LOGGER.warning("%s is not found. Broken link will be created.", src)
 
-    if src_path.is_dir():
+    if src.is_dir():
         if not dry_run:
-            dst_path.symlink_to(src_path, target_is_directory=True)
-        LOGGER.info("Linked: %s <- %s", src_path, dst_path)
+            dst.symlink_to(src, target_is_directory=True)
+        LOGGER.info("Linked: %s <- %s", src, dst)
         return
 
     if not dry_run:
-        dst_path.symlink_to(src_path)
-    LOGGER.info("Linked: %s <- %s", src_path, dst_path)
+        dst.symlink_to(src)
+    LOGGER.info("Linked: %s <- %s", src, dst)
     return
 
 
@@ -257,11 +257,10 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
 
         LOGGER.info("End process for %s", path.name)
 
-
-#    LOGGER.info("Linking to new dotfiles...")
-#    for path_conf in path_config_list:
-#        link_dst_to_src(path_conf=path_conf, dry_run=is_dry_run)
-#    LOGGER.info("...done.")
+        LOGGER.info("Linking to new dotfiles...")
+        for conf in confs:
+            link_dst_to_src(path_conf=conf, dry_run=is_dry_run)
+        LOGGER.info("...done.")
 
 
 if __name__ == '__main__':

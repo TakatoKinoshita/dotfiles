@@ -238,7 +238,7 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
         LOGGER.info("...done")
 
         LOGGER.info("Back upping old dotfiles...")
-        backup_dir = home_dir / ".dotbackup"
+        backup_dir = home_dir / ".dotbackup" / path.name
         for conf in confs:
             backup_dst(dst=conf.dst, backup_dir=backup_dir, dry_run=is_dry_run)
         LOGGER.info("...done")

@@ -169,6 +169,17 @@ def generate_backup_json(configs: list[PathConfig], backup_dir: Path,) -> list[j
     return res if res else None
 
 
+def write_backup_json(json_bk: list[json_type] | None, backup_dir: Path, dry_run: bool) -> None:
+    if json_bk is None:
+        return
+    if dry_run:
+        return
+
+    save_to = backup_dir / "path.json"
+    save_to.write_text(json.dumps(json_bk))
+    LOGGER.info("Created: %s", save_to)
+
+
 @recording(LOGGER)
 def cleanup_dst(path_conf: PathConfig, dry_run: bool):
     dst_path = path_conf.dst
@@ -245,6 +256,8 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
 
         LOGGER.info("Generating backup json.path...")
         json_bk = generate_backup_json(confs, backup_dir)
+        write_backup_json(json_bk=json_bk, backup_dir=backup_dir, dry_run=is_dry_run)
+        LOGGER.info("...done")
 
         LOGGER.info("End process for %s", path.name)
 

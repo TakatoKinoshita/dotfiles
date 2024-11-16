@@ -255,12 +255,12 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
             cleanup_dst(dst=conf.dst, dry_run=is_dry_run)
         LOGGER.info("...done")
 
-        LOGGER.info("End process for %s", path.name)
-
         LOGGER.info("Linking to new dotfiles...")
         for conf in confs:
             link_dst_to_src(path_conf=conf, dry_run=is_dry_run)
         LOGGER.info("...done.")
+
+        LOGGER.info("End process for %s", path.name)
 
 
 if __name__ == '__main__':

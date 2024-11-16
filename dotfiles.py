@@ -173,26 +173,25 @@ def write_backup_json(json_bk: list[json_type] | None, backup_dir: Path, dry_run
 
 
 @recording(LOGGER)
-def cleanup_dst(path_conf: PathConfig, dry_run: bool):
-    dst_path = path_conf.dst
-    if not dst_path.exists():
-        LOGGER.debug("%s is not found.", dst_path)
+def cleanup_dst(dst: Path, dry_run: bool):
+    if not dst.exists():
+        LOGGER.debug("%s is not found.", dst)
         return
 
-    if dst_path.is_file():
+    if dst.is_file():
         if not dry_run:
-            dst_path.unlink()
-        LOGGER.info("Deleted: %s", dst_path)
+            dst.unlink()
+        LOGGER.info("Deleted: %s", dst)
         return
 
-    if dst_path.is_dir():
+    if dst.is_dir():
         if not dry_run:
-            shutil.rmtree(dst_path)
-        LOGGER.info("Deleted: %s", dst_path)
+            shutil.rmtree(dst)
+        LOGGER.info("Deleted: %s", dst)
         return
 
     LOGGER.error("Unexpected error: %s", sys.exc_info()[0])
-    raise RuntimeError("%s is invalid." % path_conf)
+    raise RuntimeError("%s is invalid." % dst)
 
 
 @recording(LOGGER)
@@ -251,14 +250,14 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
         write_backup_json(json_bk=json_bk, backup_dir=backup_dir, dry_run=is_dry_run)
         LOGGER.info("...done")
 
+        LOGGER.info("Cleaning up old dotfiles...")
+        for conf in confs:
+            cleanup_dst(dst=conf.dst, dry_run=is_dry_run)
+        LOGGER.info("...done")
+
         LOGGER.info("End process for %s", path.name)
 
 
-#    LOGGER.info("Cleaning upping old dotfiles...")
-#    for path_conf in path_config_list:
-#        cleanup_dst(path_conf=path_conf, dry_run=is_dry_run)
-#    LOGGER.info("...done.")
-#
 #    LOGGER.info("Linking to new dotfiles...")
 #    for path_conf in path_config_list:
 #        link_dst_to_src(path_conf=path_conf, dry_run=is_dry_run)

@@ -119,15 +119,6 @@ def check_json(json_obj: json_type):
 
 
 @recording(LOGGER)
-def copy_json(backup_dir: Path, pack_dir: Path, dry_run: bool):
-    setting_path = pack_dir / "path.json"
-    copy_to = backup_dir / pack_dir.name / "path.json"
-    if not dry_run:
-        shutil.copy2(setting_path, copy_to)
-    LOGGER.info("Copied: %s -> %s", setting_path, copy_to)
-
-
-@recording(LOGGER)
 def backup_dst(dst: Path, backup_dir: Path, dry_run: bool):
     if not dst.exists():
         LOGGER.debug("%s is not found.", dst)
@@ -169,6 +160,7 @@ def generate_backup_json(configs: list[PathConfig], backup_dir: Path,) -> list[j
     return res if res else None
 
 
+@recording(LOGGER)
 def write_backup_json(json_bk: list[json_type] | None, backup_dir: Path, dry_run: bool) -> None:
     if json_bk is None:
         return
@@ -262,31 +254,6 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
         LOGGER.info("End process for %s", path.name)
 
 
-#    LOGGER.info("Reading each path.json...")
-#    path_config_list: list[PathConfig] = []
-#    for pack in iter_package(package_base):
-#        setting_path = pack / "path.json"
-#
-#    #    path_config_list.extend(check_convert_json(json_obj=json_obj, pack_path=pack, home_dir=home_dir))
-#    LOGGER.debug("path configs: %s", path_config_list)
-#    LOGGER.info("...done.")
-#
-#    LOGGER.info("Set upping backup...")
-#    backup_dir = home_dir / ".dotbackup"
-#    for pack in iter_package(package_base):
-#        backup_pack = backup_dir / pack.name
-#        if not backup_pack.exists():
-#            if not is_dry_run:
-#                backup_pack.mkdir(parents=True, exist_ok=True)
-#            LOGGER.info("Created: %s", backup_pack)
-#        copy_json(backup_dir=backup_dir, pack_dir=pack, dry_run=is_dry_run)
-#    LOGGER.info("...done.")
-#
-#    LOGGER.info("Back upping old dotfiles...")
-#    for path_conf in path_config_list:
-#        backup_dst(path_conf=path_conf, backup_dir=backup_dir, dry_run=is_dry_run)
-#    LOGGER.info("...done.")
-#
 #    LOGGER.info("Cleaning upping old dotfiles...")
 #    for path_conf in path_config_list:
 #        cleanup_dst(path_conf=path_conf, dry_run=is_dry_run)

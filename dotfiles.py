@@ -254,6 +254,12 @@ def main_install(package_base: Path, home_dir: Path, is_dry_run: bool) -> None:
 
 
 @recording(LOGGER)
+def main_restore(package_base: Path, home_dir: Path, is_dry_run: bool) -> None:
+    for path in iter_package(package_base):
+        pass
+
+
+@recording(LOGGER)
 def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_run: bool = False, ):
     if is_dry_run:
         handle = logging.StreamHandler(sys.stdout)
@@ -268,7 +274,10 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
         check_json(json_obj)
     LOGGER.info("...done")
 
-    main_install(package_base, home_dir, is_dry_run)
+    if not is_restore:
+        main_install(package_base, home_dir, is_dry_run)
+    else:
+        main_restore(package_base, home_dir, is_dry_run)
 
 
 

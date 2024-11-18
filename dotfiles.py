@@ -6,7 +6,7 @@ import shutil
 import sys
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from functools import wraps, lru_cache
+from functools import wraps, cache
 from inspect import signature
 from pathlib import Path
 
@@ -64,7 +64,7 @@ def iter_package(package_base: Path):
 
 
 @recording(LOGGER)
-@lru_cache
+@cache
 def cache_load_json(path: Path) -> json_type:
     with path.open() as f:
         LOGGER.debug("Opened %s.", path)

@@ -110,11 +110,16 @@ def normalize_json(json_obj: json_type) -> list[json_type]:
 
 
 @recording(LOGGER)
-def list_json_to_config(json_obj: list[json_type], home_dir: Path, ) -> list[PathConfig]:
+def list_json_to_config(
+        json_obj: list[json_type],
+        home_dir: Path,
+        package_path: Path,
+) -> list[PathConfig]:
     res = []
     for entry in json_obj:
-        dst = home_dir / entry["dst"] if entry["is_home"] else entry["dst"]
-        res.append(PathConfig(src=entry["src"], dst=dst))
+        src = package_path / entry["src"]
+        dst = home_dir / entry["dst"] if entry["is_home"] else Path(entry["dst"])
+        res.append(PathConfig(src=src, dst=dst,))
     return res
 
 

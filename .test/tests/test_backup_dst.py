@@ -30,6 +30,16 @@ class MyTestCase(unittest.TestCase):
                         cmp = dircmp(conf.dst, expected)
                         self.assertFalse(list(cmp.diff_files))
 
+    def test_normal_extra_dst(self):
+        pack = self.package_base / "pack8"
+        conf_list = load_check_convert_json(pack, self.home_dir)
+        for conf in conf_list:
+            dst = conf.dst
+            pack_path = self.backup_dir / pack.name
+            expected = pack_path / dst.name
+            backup_dst(dst=dst, backup_dir=pack_path, dry_run=False, )
+            self.assertTrue(expected.exists())
+
     def test_normal_symlink(self):
         pack = self.package_base / "pack10"
         conf_list = load_check_convert_json(pack, self.home_dir)

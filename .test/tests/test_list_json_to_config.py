@@ -1,8 +1,8 @@
 import unittest
 from pathlib import Path
 
-from dotfiles import check_convert_json, PathConfig
-from util import set_current_dir_to_test_root, load_json
+from dotfiles import list_json_to_config, PathConfig, cache_load_json, normalize_json
+from util import set_current_dir_to_test_root
 
 
 class MyTestCase(unittest.TestCase):
@@ -12,47 +12,46 @@ class MyTestCase(unittest.TestCase):
         self.other_dir = Path("extra_dst")
 
     def test_normal(self):
-        dotfile = Path("package_bases/normal")
+        package_base = Path("package_bases/normal")
         packs = [f"pack{i}" for i in [1, 3, 8, 9]]
-        expected_confs = [
+        expected = [
             [
                 PathConfig(
-                    dotfile / "pack1" / "file1_1",
+                    package_base / "pack1" / "file1_1",
                     self.home_dir / "file1_1",
                 ),
             ],
             [
                 PathConfig(
-                    dotfile / "pack3" / "file3_1",
+                    package_base / "pack3" / "file3_1",
                     self.home_dir / "file3_1",
                 ),
                 PathConfig(
-                    dotfile / "pack3" / "dir3_1",
+                    package_base / "pack3" / "dir3_1",
                     self.home_dir / "dir3_1",
                 ),
             ],
             [
                 PathConfig(
-                    dotfile / "pack8" / "file8_1",
+                    package_base / "pack8" / "file8_1",
                     self.other_dir / "file8_1",
                 ),
             ],
             [
                 PathConfig(
-                    dotfile / "pack9" / "file9_1",
+                    package_base / "pack9" / "file9_1",
                     self.home_dir / "file9_1",
                 ),
             ],
         ]
-        for pack, ec in zip(packs, expected_confs):
-            pack_dir = dotfile / pack
-            json = load_json(pack_dir / "path.json")
+        for pack, ex in zip(packs, expected):
+            package_path = package_base / pack
+            json_list = cache_load_json(package_base / pack / "path.json")
+            json_list = normalize_json(json_list)
 
             with self.subTest(package=pack):
-                conf_list = check_convert_json(json, pack_dir, self.home_dir)
-                self.assertListEqual(ec, conf_list)
-
-
+                conf_list = list_json_to_config(json_list, self.home_dir, package_path)
+                self.assertListEqual(ex, conf_list)
 
 
 if __name__ == '__main__':

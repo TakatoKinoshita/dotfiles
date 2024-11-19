@@ -33,7 +33,7 @@ class MyTestCase(unittest.TestCase):
             [
                 PathConfig(
                     package_base / "pack8" / "file8_1",
-                    self.other_dir / "file8_1",
+                    self.other_dst / "file8_1",
                 ),
             ],
             [

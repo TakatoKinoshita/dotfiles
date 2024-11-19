@@ -4,7 +4,7 @@ from filecmp import dircmp
 from pathlib import Path
 
 from dotfiles import backup_dst, load_check_convert_json
-from util import set_current_dir_to_test_root
+from util import set_current_dir_to_test_root, reset_dsts
 
 
 class MyTestCase(unittest.TestCase):
@@ -34,12 +34,7 @@ class MyTestCase(unittest.TestCase):
                         self.assertFalse(list(cmp.diff_files))
 
     def tearDown(self):
-        shutil.rmtree(self.home_dir)
-        shutil.rmtree(self.other_dst)
-        self.home_dir.mkdir(exist_ok=True)
-        (self.home_dir / ".gitkeep").touch()
-        self.other_dst.mkdir(exist_ok=True)
-        (self.other_dst / ".gitkeep").touch()
+        reset_dsts(self.home_dir, self.other_dst)
 
 
 if __name__ == '__main__':

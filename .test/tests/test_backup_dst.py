@@ -50,6 +50,13 @@ class MyTestCase(unittest.TestCase):
             backup_dst(dst=dst, backup_dir=pack_path, dry_run=False, )
             self.assertFalse(expected.exists())
 
+    def test_normal_not_exist(self):
+        dst = self.home_dir / "not_exist"
+        pack_path = self.backup_dir / "packX"
+        expected = pack_path / "not_exist"
+        backup_dst(dst=dst, backup_dir=pack_path, dry_run=False, )
+        self.assertFalse(expected.exists())
+
     def tearDown(self):
         reset_dsts(self.home_dir, self.other_dst)
 

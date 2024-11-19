@@ -19,3 +19,8 @@ def reset_dsts(home_dir, extra_dst):
 def copy_templates(temp_dir, home_dir, extra_dst):
     shutil.copytree(temp_dir / "home", home_dir, dirs_exist_ok=True, symlinks=True, )
     shutil.copytree(temp_dir / "extra_dst", extra_dst, dirs_exist_ok=True, symlinks=True, )
+
+def set_basic_atts(obj):
+    setattr(obj, "home_dir", Path("home"))
+    setattr(obj, "backup_dir", Path("home/.dotbackup"))
+    setattr(obj, "other_dst", Path("extra_dst"))

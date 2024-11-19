@@ -4,17 +4,15 @@ from filecmp import dircmp
 from pathlib import Path
 
 from dotfiles import backup_dst, load_check_convert_json
-from util import set_current_dir_to_test_root, reset_dsts, copy_templates
+from util import set_current_dir_to_test_root, reset_dsts, copy_templates, set_basic_atts
 
 
 class MyTestCase(unittest.TestCase):
     def setUp(self):
         set_current_dir_to_test_root()
-        self.home_dir = Path("home")
-        self.backup_dir = self.home_dir / ".dotbackup"
+        set_basic_atts(self)
         self.package_base = Path("package_bases/normal")
         self.backup_dir.mkdir(exist_ok=True)
-        self.other_dst = Path("extra_dst")
         copy_templates(Path("dst_templates"), self.home_dir, self.other_dst)
 
     def test_normal_home(self):

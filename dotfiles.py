@@ -110,24 +110,20 @@ def normalize_json(json_obj: json_type) -> list[json_type]:
 
 
 @recording(LOGGER)
-def list_json_to_config(
-        json_obj: list[json_type],
-        home_dir: Path,
-        package_path: Path,
-) -> list[PathConfig]:
+def list_json_to_config(json_obj: list[json_type], home_dir: Path, package_path: Path, ) -> list[PathConfig]:
     res = []
     for entry in json_obj:
         src = package_path / entry["src"]
         dst = home_dir / entry["dst"] if entry["is_home"] else Path(entry["dst"])
-        res.append(PathConfig(src=src, dst=dst,))
+        res.append(PathConfig(src=src, dst=dst, ))
     return res
 
 
-def load_check_convert_json(path, home_dir):
+def load_check_convert_json(path, home_dir, package_path) -> list[PathConfig]:
     json_path = path / "path.json"
     json_obj = cache_load_json(json_path)
     json_obj = normalize_json(json_obj)
-    confs = list_json_to_config(json_obj, home_dir)
+    confs = list_json_to_config(json_obj, home_dir, package_path)
     return confs
 
 
@@ -163,7 +159,7 @@ def backup_dst(dst: Path, backup_dir: Path, dry_run: bool):
 
 
 @recording(LOGGER)
-def generate_backup_json(configs: list[PathConfig], backup_dir: Path,) -> list[json_type] | None:
+def generate_backup_json(configs: list[PathConfig], backup_dir: Path, ) -> list[json_type] | None:
     res = []
     for config in configs:
         dst = config.dst
@@ -236,7 +232,7 @@ def main_install(package_base: Path, home_dir: Path, is_dry_run: bool) -> None:
         LOGGER.info("Start process for %s", path.name)
 
         LOGGER.info("Loading path.json...")
-        confs = load_check_convert_json(path, home_dir)
+        confs = load_check_convert_json(path, home_dir, path)
         LOGGER.info("...done")
 
         LOGGER.info("Back upping old dotfiles...")
@@ -269,9 +265,8 @@ def main_restore(package_base: Path, home_dir: Path, is_dry_run: bool) -> None:
         LOGGER.info("Start process for %s", path.name)
 
         LOGGER.info("Loading path.json...")
-        confs = load_check_convert_json(path, home_dir)
+        confs = load_check_convert_json(path, home_dir, path)
         LOGGER.info("...done")
-
 
 
 @recording(LOGGER)
@@ -293,7 +288,6 @@ def main(package_base: Path, home_dir: Path, is_restore: bool = False, is_dry_ru
         main_install(package_base, home_dir, is_dry_run)
     else:
         main_restore(package_base, home_dir, is_dry_run)
-
 
 
 if __name__ == '__main__':

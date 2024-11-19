@@ -4,7 +4,7 @@ from filecmp import dircmp
 from pathlib import Path
 
 from dotfiles import backup_dst, load_check_convert_json
-from util import set_current_dir_to_test_root, reset_dsts
+from util import set_current_dir_to_test_root, reset_dsts, copy_templates
 
 
 class MyTestCase(unittest.TestCase):
@@ -15,9 +15,7 @@ class MyTestCase(unittest.TestCase):
         self.package_base = Path("package_bases/normal")
         self.backup_dir.mkdir(exist_ok=True)
         self.other_dst = Path("extra_dst")
-        self.temp_dir = Path("dst_templates")
-        shutil.copytree(self.temp_dir / "home", self.home_dir, dirs_exist_ok=True, symlinks=True, )
-        shutil.copytree(self.temp_dir / "other_dst", self.other_dst, dirs_exist_ok=True, symlinks=True, )
+        copy_templates(Path("dst_templates"), self.home_dir, self.other_dst)
 
     def test_normal_home(self):
         packs = [self.package_base / f"pack{i}" for i in range(1, 8)]

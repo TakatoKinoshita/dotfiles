@@ -15,3 +15,7 @@ def reset_dsts(home_dir, extra_dst):
     (home_dir / ".gitkeep").touch()
     extra_dst.mkdir(exist_ok=True)
     (extra_dst / ".gitkeep").touch()
+
+def copy_templates(temp_dir, home_dir, extra_dst):
+    shutil.copytree(temp_dir / "home", home_dir, dirs_exist_ok=True, symlinks=True, )
+    shutil.copytree(temp_dir / "extra_dst", extra_dst, dirs_exist_ok=True, symlinks=True, )

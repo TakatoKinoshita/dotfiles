@@ -21,9 +21,10 @@ class MyTestCase(unittest.TestCase):
             conf_list = load_check_convert_json(pack, self.home_dir, )
             for conf in conf_list:
                 dst = conf.dst
-                expected = self.backup_dir / dst.name
+                pack_path = self.backup_dir / pack.name
+                expected = pack_path / dst.name
                 with self.subTest(src=conf.src.name):
-                    backup_dst(dst=dst, backup_dir=self.backup_dir, dry_run=False, )
+                    backup_dst(dst=dst, backup_dir=pack_path, dry_run=False, )
                     self.assertTrue(expected.exists())
                     if conf.dst.is_dir():
                         cmp = dircmp(conf.dst, expected)

@@ -2,18 +2,17 @@ import unittest
 from pathlib import Path
 
 from dotfiles import generate_backup_json, load_check_convert_json, backup_dst
-from util import set_current_dir_to_test_root, reset_dsts, copy_templates, set_basic_atts
+from util import TestUtil
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase(TestUtil.BaseTest):
     def setUp(self):
-        set_current_dir_to_test_root()
-        set_basic_atts(self)
+        self.set_current_dir_to_test_root()
         self.package_base = Path("package_bases/normal")
         self.backup_dir.mkdir(exist_ok=True)
 
     def test_normal_not_empty(self):
-        copy_templates(Path("dst_templates"), self.home_dir, self.other_dst)
+        self.copy_templates()
         expected = [
             [
                 {
@@ -73,7 +72,7 @@ class MyTestCase(unittest.TestCase):
                 {
                     "is_home": False,
                     "src": self.backup_dir / "pack8" / "file8_1",
-                    "dst": self.other_dst / "file8_1",
+                    "dst": self.extra_dst / "file8_1",
                 },
             ],
             [
@@ -104,7 +103,7 @@ class MyTestCase(unittest.TestCase):
             self.assertIsNone(json_bk)
 
     def tearDown(self):
-        reset_dsts(self.home_dir, self.other_dst)
+        self.reset_dsts()
 
 
 if __name__ == '__main__':

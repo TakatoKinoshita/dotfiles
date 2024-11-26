@@ -2,13 +2,12 @@ import unittest
 from pathlib import Path
 
 from dotfiles import list_json_to_config, PathConfig, cache_load_json, normalize_json
-from util import set_current_dir_to_test_root, set_basic_atts
+from util import TestUtil
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase(TestUtil.BaseTest):
     def setUp(self):
-        set_current_dir_to_test_root()
-        set_basic_atts(self)
+        self.set_current_dir_to_test_root()
 
     def test_normal(self):
         package_base = Path("package_bases/normal")
@@ -33,7 +32,7 @@ class MyTestCase(unittest.TestCase):
             [
                 PathConfig(
                     package_base / "pack8" / "file8_1",
-                    self.other_dst / "file8_1",
+                    self.extra_dst / "file8_1",
                 ),
             ],
             [

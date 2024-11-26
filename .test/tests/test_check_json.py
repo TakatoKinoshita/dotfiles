@@ -3,11 +3,12 @@ import unittest
 from pathlib import Path
 
 from dotfiles import check_json, cache_load_json
-from util import set_current_dir_to_test_root
+from util import TestUtil
 
-class MyTestCase(unittest.TestCase):
+
+class MyTestCase(TestUtil.BaseTest):
     def setUp(self):
-        set_current_dir_to_test_root()
+        self.set_current_dir_to_test_root()
 
     def test_error(self):
         dotfile = Path("package_bases/negative")

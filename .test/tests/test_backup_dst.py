@@ -1,19 +1,17 @@
-import shutil
 import unittest
 from filecmp import dircmp
 from pathlib import Path
 
 from dotfiles import backup_dst, load_check_convert_json
-from util import set_current_dir_to_test_root, reset_dsts, copy_templates, set_basic_atts
+from util import TestUtil
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase(TestUtil.BaseTest):
     def setUp(self):
-        set_current_dir_to_test_root()
-        set_basic_atts(self)
+        self.set_current_dir_to_test_root()
         self.package_base = Path("package_bases/normal")
         self.backup_dir.mkdir(exist_ok=True)
-        copy_templates(Path("dst_templates"), self.home_dir, self.other_dst)
+        self.copy_templates()
 
     def test_normal_home(self):
         packs = [self.package_base / f"pack{i}" for i in range(1, 8)]
@@ -58,7 +56,7 @@ class MyTestCase(unittest.TestCase):
         self.assertFalse(expected.exists())
 
     def tearDown(self):
-        reset_dsts(self.home_dir, self.other_dst)
+        self.reset_dsts()
 
 
 if __name__ == '__main__':

@@ -227,7 +227,7 @@ def link_dst_to_src(path_conf: PathConfig, dry_run: bool):
 def main_install(package_base: Path, home_dir: Path, is_dry_run: bool) -> None:
     if is_dry_run:
         LOGGER.warning("Notice that generation of path.json will skipped in dry run.")
-        LOGGER.warning("In other words, the operation will be informed even if path.json will actually be created.")
+        LOGGER.warning("In other words, the operation will not be informed even if path.json will actually be created.")
     for path in iter_package(package_base):
         LOGGER.info("Start process for %s", path.name)
 

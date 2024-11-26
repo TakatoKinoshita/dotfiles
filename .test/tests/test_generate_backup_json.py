@@ -17,69 +17,69 @@ class MyTestCase(TestUtil.BaseTest):
             [
                 {
                     "is_home": False,
-                    "src": self.backup_dir / "pack1" / "file1_1",
-                    "dst": self.home_dir / "file1_1",
+                    "src": "file1_1",
+                    "dst": str((self.home_dir / "file1_1").resolve()),
                 }
             ],
             [
                 {
                     "is_home": False,
-                    "src": self.backup_dir / "pack2" / "dir2_1",
-                    "dst": self.home_dir / "dir2_1",
+                    "src": "dir2_1",
+                    "dst": str((self.home_dir / "dir2_1").resolve()),
                 },
             ],
             [
                 {
                     "is_home": False,
-                    "src": self.backup_dir / "pack3" / "file3_1",
-                    "dst": self.home_dir / "file3_1",
+                    "src": "file3_1",
+                    "dst": str((self.home_dir / "file3_1").resolve()),
                 },
                 {
                     "is_home": False,
-                    "src": self.backup_dir / "pack3" / "dir3_1",
-                    "dst": self.home_dir / "dir3_1",
-                },
-            ],
-            [
-                {
-                    "is_home": False,
-                    "src": self.backup_dir / "pack4" / "file4_1_1",
-                    "dst": self.home_dir / "file4_1_1",
+                    "src": "dir3_1",
+                    "dst": str((self.home_dir / "dir3_1").resolve()),
                 },
             ],
             [
                 {
                     "is_home": False,
-                    "src": self.backup_dir / "pack5" / "dir5_1_1",
-                    "dst": self.home_dir / "dir5_1_1",
+                    "src": "file4_1_1",
+                    "dst": str((self.home_dir / "file4_1_1").resolve()),
                 },
             ],
             [
                 {
                     "is_home": False,
-                    "src": self.backup_dir / "pack6" / "file",
-                    "dst": self.home_dir / "file",
+                    "src": "dir5_1_1",
+                    "dst": str((self.home_dir / "dir5_1_1").resolve()),
                 },
             ],
             [
                 {
                     "is_home": False,
-                    "src": self.backup_dir / "pack7" / "file7_1",
-                    "dst": self.home_dir / "dir/file7_1",
+                    "src": "file",
+                    "dst": str((self.home_dir / "file").resolve()),
                 },
             ],
             [
                 {
                     "is_home": False,
-                    "src": self.backup_dir / "pack8" / "file8_1",
-                    "dst": self.extra_dst / "file8_1",
+                    "src": "file7_1",
+                    "dst": str((self.home_dir / "dir/file7_1").resolve()),
                 },
             ],
             [
                 {
                     "is_home": False,
-                    "src": self.backup_dir / "pack9" / "file9_1",
-                    "dst": self.home_dir / "file9_1",
+                    "src": "file8_1",
+                    "dst": str((self.extra_dst / "file8_1").resolve()),
+                },
+            ],
+            [
+                {
+                    "is_home": False,
+                    "src": "file9_1",
+                    "dst": str((self.home_dir / "file9_1").resolve()),
                 },
             ],
         ]

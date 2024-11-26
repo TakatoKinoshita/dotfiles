@@ -162,10 +162,10 @@ def backup_dst(dst: Path, backup_dir: Path, dry_run: bool):
 def generate_backup_json(configs: list[PathConfig], backup_dir: Path, ) -> list[json_type] | None:
     res = []
     for config in configs:
-        dst = config.dst
+        dst = config.dst.resolve()
         copy_to = backup_dir / dst.name
         if copy_to.exists():
-            res.append({"is_home": False, "src": copy_to, "dst": dst})
+            res.append({"is_home": False, "src": copy_to.name, "dst": str(dst)})
     return res if res else None
 
 

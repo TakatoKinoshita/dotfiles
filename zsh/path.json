@@ -1,0 +1,12 @@
+[
+  {
+    "is_home": true,
+    "src": ".zshrc",
+    "dst": ".zshrc"
+  },
+  {
+    "is_home": true,
+    "src": "sheldon",
+    "dst": ".config/sheldon"
+  }
+]

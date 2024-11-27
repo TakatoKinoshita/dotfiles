@@ -17,7 +17,7 @@ This operation will create symbolic links to the dotfiles and copy old dotfiles 
 4. Run `./dotfiles.py` to install the new dotfiles.
 
 `path.json` must represent a JSON object or an array of JSON objects with the following keys:
-- `src`: Source path to a dotfile (e.g. `".zshrc"`). 
+- `src`: Source relative path to a dotfile (e.g. `".zshrc"`). 
 - `dst`: Destination path to a dotfile (e.g. `"~/.zshrc"`).
 - `is_home` (optional `true`): If `true`, the destination is interpreted as a relative path from the home directory (e.g. `".zshrc"` -> `"~/.zshrc"`). Otherwise, the destination is interpreted as an absolute path (e.g. `"~/zshrc"`).
 

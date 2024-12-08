@@ -1,3 +1,5 @@
 [user]
 	name = TakatoKinoshita
 	email = takato@ieee.org
+[core]
+	editor = nvim

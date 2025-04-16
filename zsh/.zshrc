@@ -16,6 +16,7 @@ fi
 # rootless docker
 export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/docker.sock
 
+# Sheldon
 eval "$(sheldon source)"
 
 # RubyGems

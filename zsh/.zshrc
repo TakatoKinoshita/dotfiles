@@ -35,4 +35,4 @@ abbr -S sedie='sed -i -e' >> /dev/null
 abbr -S ltdiff='latexdiff-vc -e utf8 --git --flatten --force --graphics-markup=none -r' >> /dev/null
 
 # matlab
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/MATLAB/R2024b/bin/glnxa64
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/MATLAB/R2024b/bin/glnxa64
